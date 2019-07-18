@@ -13,7 +13,7 @@ import psycopg2.extras
 conn = psycopg2.connect(host="localhost", database="pet_hotel")
 cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-@app.route('/')
+@app.route('/api/owners')
 def home_route():
     cur.execute('SELECT * FROM owner')
     owners = cur.fetchall()
