@@ -14,7 +14,13 @@ conn = psycopg2.connect(host="localhost", database="pet_hotel")
 cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
 @app.route('/api/owners')
-def home_route():
+def owner_route():
     cur.execute('SELECT * FROM owner')
     owners = cur.fetchall()
     return jsonify(owners)
+
+@app.route('/api/pets')
+def pet_route():
+    cur.execute('SELECT * FROM pet')
+    pets = cur.fetchall()
+    return jsonify(pets)
