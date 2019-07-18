@@ -15,6 +15,6 @@ cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
 @app.route('/api/owners')
 def home_route():
-    cur.execute('SELECT * FROM owner')
+    cur.execute('SELECT owner.id, owner.name, COUNT(pet.id) FROM owner JOIN pet on pet.owner_id = owner.id GROUP BY owner.id;')
     owners = cur.fetchall()
     return jsonify(owners)
