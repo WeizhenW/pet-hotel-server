@@ -41,3 +41,11 @@ def pet_route():
     cur.execute('SELECT "pet".*, "owner"."name" as "owner_name" FROM "pet" JOIN "owner" ON "owner"."id" = "pet"."owner_id" ORDER BY "pet"."id";')
     pets = cur.fetchall()
     return jsonify(pets)
+
+# update check in/ check out status route
+@app.route('/api/checkout', methods = ['PUT'])
+def toggle_pet_status():
+    print(request.get_json())
+    cur.execute("UPDATE pet SET check_in = %s WHERE id = %s",(request.get_json()['newStatus'], request.get_json()['petId']))
+    conn.commit()
+    return 'ok'
