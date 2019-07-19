@@ -15,8 +15,9 @@ import psycopg2.extras
 conn = psycopg2.connect(host="localhost", database="pet_hotel")
 cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-@app.route('/api/owners', methods=['GET', 'POST'])
-def home_route():
+# get and post routes for owners
+@app.route('/api/owners', methods=['GET', 'POST', 'DELETE'])
+def owner_route():
     if request.method == 'GET':
         cur.execute('SELECT owner.id, owner.name, COUNT(pet.id) FROM owner LEFT JOIN pet on pet.owner_id = owner.id GROUP BY owner.id;')
         owners = cur.fetchall()
@@ -26,6 +27,13 @@ def home_route():
         cur.execute("INSERT INTO owner (name) VALUES (%s)",(request.get_json()['name'],))
         conn.commit()
         return 'ok'
+# delete owner route
+@app.route('/api/owners/<owner_id>', methods=['DELETE'])
+def delete_owner(owner_id):
+    print(owner_id)
+    cur.execute("DELETE FROM owner WHERE id = %s",(owner_id,))
+    conn.commit()
+    return 'ok'
 
 
 @app.route('/api/pets', methods=['GET', 'POST'])
