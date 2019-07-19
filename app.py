@@ -2,6 +2,8 @@
 
 from flask import Flask
 from flask import jsonify
+from flask import request
+
 
 app = Flask(__name__)
 
@@ -13,11 +15,18 @@ import psycopg2.extras
 conn = psycopg2.connect(host="localhost", database="pet_hotel")
 cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-@app.route('/api/owners')
-def owner_route():
-    cur.execute('SELECT * FROM owner')
-    owners = cur.fetchall()
-    return jsonify(owners)
+@app.route('/api/owners', methods=['GET', 'POST'])
+def home_route():
+    if request.method == 'GET':
+        cur.execute('SELECT owner.id, owner.name, COUNT(pet.id) FROM owner LEFT JOIN pet on pet.owner_id = owner.id GROUP BY owner.id;')
+        owners = cur.fetchall()
+        return jsonify(owners)
+    elif request.method == 'POST':
+        print(request.get_json()['name'])
+        cur.execute("INSERT INTO owner (name) VALUES (%s)",(request.get_json()['name'],))
+        conn.commit()
+        return 'ok'
+
 
 @app.route('/api/pets')
 def pet_route():
