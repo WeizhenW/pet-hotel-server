@@ -35,7 +35,7 @@ def delete_owner(owner_id):
     conn.commit()
     return 'ok'
 
-
+#get and post route to api/pets
 @app.route('/api/pets', methods=['GET', 'POST'])
 def pet_route():
     if request.method == 'GET':
