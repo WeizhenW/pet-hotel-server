@@ -47,3 +47,25 @@ def pet_route():
         cur.execute("INSERT INTO pet (name, breed, color, age, owner_id) VALUES (%s, %s, %s, %s, %s)", (request.get_json()['name'],request.get_json()['breed'],request.get_json()['color'],request.get_json()['age'],request.get_json()['owner'],))
         conn.commit()
         return 'ok'
+
+# post and put into visit table
+@app.route('/api/checkout/<petId>', methods=['POST', 'PUT'])
+def add_visit(petId):
+    print(petId)
+    if request.method == 'POST':
+        cur.execute("INSERT INTO visit (pet_id) VALUES (%s)",(petId,))
+        conn.commit()
+        return 'ok'
+    elif request.method == 'PUT':
+        cur.execute("UPDATE visit SET checkout_date = CURRENT_DATE WHERE pet_id = %s AND id IN(SELECT max(id) FROM visit WHERE pet_id = %s)",(petId, petId))
+        conn.commit()
+        return 'ok'
+
+# update check in/ check out status route
+@app.route('/api/checkout', methods = ['PUT'])
+def toggle_pet_status():
+    print(request.get_json())
+    cur.execute("UPDATE pet SET check_in = %s WHERE id = %s",(request.get_json()['newStatus'], request.get_json()['petId']))
+    conn.commit()
+    return 'ok'
+    
