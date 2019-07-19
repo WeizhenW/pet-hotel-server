@@ -42,13 +42,18 @@ def pet_route():
     pets = cur.fetchall()
     return jsonify(pets)
 
-# post into visit table
-@app.route('/api/checkout/<petId>', methods=['POST'])
+# post and put into visit table
+@app.route('/api/checkout/<petId>', methods=['POST', 'PUT'])
 def add_visit(petId):
     print(petId)
-    cur.execute("INSERT INTO visit (pet_id) VALUES (%s)",(petId,))
-    conn.commit()
-    return 'ok'
+    if request.method == 'POST':
+        cur.execute("INSERT INTO visit (pet_id) VALUES (%s)",(petId,))
+        conn.commit()
+        return 'ok'
+    elif request.method == 'PUT':
+        cur.execute("UPDATE visit SET checkout_date = CURRENT_DATE WHERE pet_id = %s AND id IN(SELECT max(id) FROM visit WHERE pet_id = %s)",(petId, petId))
+        conn.commit()
+        return 'ok'
 
 # update check in/ check out status route
 @app.route('/api/checkout', methods = ['PUT'])
