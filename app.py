@@ -28,8 +28,14 @@ def home_route():
         return 'ok'
 
 
-@app.route('/api/pets')
+@app.route('/api/pets', methods=['GET', 'POST'])
 def pet_route():
-    cur.execute('SELECT "pet".*, "owner"."name" as "owner_name" FROM "pet" JOIN "owner" ON "owner"."id" = "pet"."owner_id" ORDER BY "pet"."id";')
-    pets = cur.fetchall()
-    return jsonify(pets)
+    if request.method == 'GET':
+        cur.execute('SELECT "pet".*, "owner"."name" as "owner_name" FROM "pet" JOIN "owner" ON "owner"."id" = "pet"."owner_id" ORDER BY "pet"."id";')
+        pets = cur.fetchall()
+        return jsonify(pets)
+    elif request.method == 'POST':
+        print(request.get_json())
+        cur.execute("INSERT INTO pet (name, breed, color, age, owner_id) VALUES (%s, %s, %s, %s, %s)", (request.get_json()['name'],request.get_json()['breed'],request.get_json()['color'],request.get_json()['age'],request.get_json()['owner'],))
+        conn.commit()
+        return 'ok'
