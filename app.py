@@ -26,3 +26,10 @@ def home_route():
         cur.execute("INSERT INTO owner (name) VALUES (%s)",(request.get_json()['name'],))
         conn.commit()
         return 'ok'
+
+
+@app.route('/api/pets')
+def pet_route():
+    cur.execute('SELECT "pet".*, "owner"."name" as "owner_name" FROM "pet" JOIN "owner" ON "owner"."id" = "pet"."owner_id" ORDER BY "pet"."id";')
+    pets = cur.fetchall()
+    return jsonify(pets)
